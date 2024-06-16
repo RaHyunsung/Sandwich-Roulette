@@ -1,3 +1,4 @@
+from threading import Thread
 import pygame
 import sys
 import time
@@ -28,6 +29,39 @@ Credits = {
     "Designing"         : "Brian Pramana Saputra & John Carlo Arbuez",
     "Background Music"  : "Cyberpunk Gaming Sport by Infraction [No Copyright Music] / 130 Dopa"
 }
+
+# ---------- GAME OBJECTS ----------
+
+class MTI_Injector:
+    def __init__(self):
+        self.heal_amount = 1
+    def visual_effect(self):
+        _stop = False
+        def show_image():
+            while not _stop:
+                screen.blit(MTI_Image, MTI_rect)
+        Thread(target=show_image, daemon=Thread).start()
+        origin_volume = pygame.mixer.music.get_volume()
+        pygame.mixer.music.set_volume(1)
+        time.sleep(15)
+        _stop = True
+        pygame.mixer.music.set_volume(origin_volume)
+    def main(self, **kwargs):
+        player_object = kwargs["TARGET"]
+        player_max_health = player_object.max_health
+        player_health = player_object.health
+        if player_health + self.heal_amount >= player_max_health:
+            player_health = player_max_health
+        elif player_health + self.heal_amount < player_max_health:
+            player_health += self.heal_amount
+        Thread(target=self.visual_effect, daemon=True).start()
+        
+
+class Player:
+    def __init__(self):
+        self.health = 3
+        self.max_health = 3
+        self.items = []
 
 # ---------- PARTICLES ----------
 
@@ -115,6 +149,58 @@ def close_msgbox():
 def blank():
     pass
 
+class MainMenu:
+    def __init__(self):
+        self.message_box_active = False
+        self.message_box_items = []
+        self.message_box_selected = 0
+        self.message_box_title = ""
+        self.message_box_size = (400, 200)
+        self.message_box_functions = []
+    
+    def _update(self):
+        global selected_item
+        global message_box_active
+        global message_box_selected
+        global message_box_title
+        global message_box_items
+        global message_box_size
+        global message_box_functions
+
+        message_box_active = self.message_box_active
+        message_box_items = self.message_box_items
+        message_box_selected = self.message_box_selected
+        message_box_title = self.message_box_title
+        message_box_size = self.message_box_size
+        message_box_functions = self.message_box_functions
+
+    def start_game(self):
+        self.message_box_size = (1000, 250)
+        self.message_box_title = "Please choose the game mode to play"
+        self.message_box_items = ["PVP", "PVE", "Cancel"]
+        self.message_box_functions = [blank, blank, close_msgbox]
+        self.message_box_active = True
+        self.message_box_selected = 0
+        self._update()
+
+    def exit_game(self):
+        self.message_box_size = (800, 200)
+        self.message_box_title = "Do you wish to exit the game?"
+        self.message_box_functions = [quit_game, close_msgbox]
+        self.message_box_items = ["Yes", "No"]
+        self.message_box_active = True
+        self.message_box_selected = 0
+        self._update()
+
+    def show_credits(self):
+        self.message_box_size = (1800, 800)
+        self.message_box_title = '\n'.join([str(f"{key}: {value}") for key, value in Credits.items()])
+        self.message_box_functions = [close_msgbox]
+        self.message_box_items = ["Confirm"]
+        self.message_box_active = True
+        self.message_box_selected = 0
+        self._update()
+
 def main():
     global selected_item
     global message_box_active
@@ -125,8 +211,6 @@ def main():
     global message_box_functions
 
     global color_tick
-
-    smoke_sprites = pygame.sprite.Group()
 
     while True:
         screen_width, screen_height = screen.get_size()
@@ -141,21 +225,14 @@ def main():
         credit_1_surface, credit_1_rect = render_text("Present By Roy, Hyunsung, Brian, John", SMALL_FONT, WHITE, BLACK, transparent=True)
         credit_1_rect.topright = (screen_width - 50, TITLE_FONT.get_height() + 200)
 
+        screen.blit(Blood1_Image, Blood1_rect)
+
         screen.blit(title_text_surface, title_text_rect)
         screen.blit(title_2_text_surface, title_2_text_rect)
         screen.blit(credit_1_surface, credit_1_rect)
 
-        screen.blit(cigarette_image, cigarette_rect)
         screen.blit(PG_Panel_Image, PG_Panel_rect)
-        screen.blit(Blood_Image, Blood_rect)
-
-        if random.randint(1, 5) == 1:
-            smoke_particle = SmokeParticle(cigarette_rect.topleft[0], cigarette_rect.topleft[1] + 70)
-            smoke_sprites.add(smoke_particle)
-    
-        smoke_sprites.update()
-
-        smoke_sprites.draw(screen)
+        screen.blit(Blood2_Image, Blood2_rect)
 
         # Render texts
         for i, item in enumerate(menu_items):
@@ -165,7 +242,7 @@ def main():
             else:
                 color = WHITE
                 bg = BLACK
-            text_surface, text_rect = render_text(item.ljust(30), SMALL_FONT, color, bg)
+            text_surface, text_rect = render_text(item["TEXT"].ljust(30), SMALL_FONT, color, bg)
             text_rect.topleft = (20, 20 + i * 50)
             screen.blit(text_surface, text_rect)
 
@@ -183,30 +260,10 @@ def main():
                     elif event.key == pygame.K_DOWN:
                         selected_item = (selected_item + 1) % len(menu_items)
                     elif event.key == pygame.K_RETURN:
-                        if selected_item == 0:
-                            print("Start Game Selected")
-                            message_box_size = (1000, 250)
-                            message_box_title = "Please choose the game mode to play"
-                            message_box_items = ["PVP", "PVE", "Cancel"]
-                            message_box_functions = [blank, blank, close_msgbox]
-                            message_box_active = True
-                            message_box_selected = 0
-                        elif selected_item == 1:
-                            print("Settings Selected")
-                        elif selected_item == 2:
-                            message_box_size = (1800, 800)
-                            message_box_title = '\n'.join([str(f"{key}: {value}") for key, value in Credits.items()])
-                            message_box_functions = [close_msgbox]
-                            message_box_items = ["Confirm"]
-                            message_box_active = True
-                            message_box_selected = 0
-                        elif selected_item == 3:
-                            message_box_size = (800, 200)
-                            message_box_title = "Do you wish to exit the game?"
-                            message_box_functions = [quit_game, close_msgbox]
-                            message_box_items = ["Yes", "No"]
-                            message_box_active = True
-                            message_box_selected = 0
+                        menu_items[selected_item]["FUNC"]()
+                    elif event.key == pygame.K_f:
+                        injector = MTI_Injector()
+                        injector.main(TARGET=Player())
                 else:
                     if event.key == pygame.K_UP:
                         message_box_selected = (message_box_selected - 1) % len(message_box_items)
@@ -228,8 +285,16 @@ if __name__ == "__main__":
     GAME_ASSETS = {}
     load_assets()
 
+    # Main Menu Loader
+    MAIN_MENU = MainMenu()
+
     # Set menu items
-    menu_items = ["Start Game", "Settings", "Credits", "Exit"]
+    menu_items = [
+        {"TEXT" : "Start Game", "FUNC" : MAIN_MENU.start_game},
+        {"TEXT" : "Settings", "FUNC" : blank},
+        {"TEXT" : "Credits", "FUNC" : MAIN_MENU.show_credits},
+        {"TEXT" : "Exit", "FUNC" : MAIN_MENU.exit_game}
+    ]
     selected_item = 0
 
     message_box_active = False
@@ -239,30 +304,35 @@ if __name__ == "__main__":
     message_box_size = (400, 200)
     message_box_functions = []
 
-    # Cigarette Effect
-    cigarette_size = (100, 50)
-    cigarette_image = load_image(GAME_ASSETS["images"]["CIGARETTE"], cigarette_size)
-    cigarette_rect = cigarette_image.get_rect()
-    cigarette_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
-    cigarette_image = pygame.transform.rotate(cigarette_image, 30)
-
     # PG-13 Image
     PG_Panel_size = (300, 150)
     PG_Panel_Image = load_image(GAME_ASSETS["images"]["PG-13"], PG_Panel_size)
     PG_Panel_rect = PG_Panel_Image.get_rect()
     PG_Panel_rect.bottomleft = (20, screen.get_height() - 20)
 
-    # Blood
-    Blood_size = (200, 200)
-    Blood_Image = load_image(GAME_ASSETS["images"]["BLOOD2"], Blood_size)
-    Blood_rect = Blood_Image.get_rect()
-    Blood_rect.bottomleft = (130, screen.get_height())
+    # Blood 1
+    Blood1_size = (800, 400)
+    Blood1_Image = load_image(GAME_ASSETS["images"]["BLOOD1"], Blood1_size)
+    Blood1_rect = Blood1_Image.get_rect()
+    Blood1_rect.topright = (screen.get_width() - 20, 20)
+
+    # Blood 2
+    Blood2_size = (200, 200)
+    Blood2_Image = load_image(GAME_ASSETS["images"]["BLOOD2"], Blood2_size)
+    Blood2_rect = Blood2_Image.get_rect()
+    Blood2_rect.bottomleft = (130, screen.get_height())
+
+    # MTI Item
+    MTI_size = (200, 200)
+    MTI_Image = load_image(GAME_ASSETS["images"]["MTI"], MTI_size)
+    MTI_rect = MTI_Image.get_rect()
+    MTI_rect.center = (screen.get_width() / 2, screen.get_height() / 2)
 
     clock = pygame.time.Clock()
     FPS = 30
 
     pygame.mixer.music.load(GAME_ASSETS["sounds"]["BGM"])
-    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
 
     main()
