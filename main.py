@@ -51,9 +51,9 @@ class MTI_Injector:
         player_max_health = player_object.max_health
         player_health = player_object.health
         if player_health + self.heal_amount >= player_max_health:
-            player_health = player_max_health
+            player_object.health = player_max_health
         elif player_health + self.heal_amount < player_max_health:
-            player_health += self.heal_amount
+            player_object.health += self.heal_amount
         Thread(target=self.visual_effect, daemon=True).start()
         
 
@@ -262,8 +262,10 @@ def main():
                     elif event.key == pygame.K_RETURN:
                         menu_items[selected_item]["FUNC"]()
                     elif event.key == pygame.K_f:
+                        print(MAIN_CHAR.health)
                         injector = MTI_Injector()
-                        injector.main(TARGET=Player())
+                        injector.main(TARGET=MAIN_CHAR)
+                        print(MAIN_CHAR.health)
                 else:
                     if event.key == pygame.K_UP:
                         message_box_selected = (message_box_selected - 1) % len(message_box_items)
@@ -277,6 +279,8 @@ def main():
         pygame.display.flip()
 
 if __name__ == "__main__":
+    MAIN_CHAR = Player()
+    MAIN_CHAR.health -= 2
     # Set screen size & captions
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.set_caption("SANDWICH-ROULETTE")
