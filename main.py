@@ -21,7 +21,7 @@ BLUE = (0, 0, 255)
 DARK_GRAY = (50, 50, 50)
 TRANSPARENT_WHITE = (255, 255, 255, 128)
 
-# Creidts
+# Credits
 Credits = {
     "Core Programmer"   : "Hyunsung Ra & Roy Xu",
     "UI Programmer"     : "Hyunsung Ra",
