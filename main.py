@@ -5,6 +5,7 @@ import time
 import os
 import random
 
+# init Pygame core
 pygame.init()
 
 # Set font
