@@ -41,3 +41,4 @@ class Core:
 for i in range(3):
     print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
     print(f"Items: {Core.getItems(ITEMS)}")
+    print("-" * 10)
