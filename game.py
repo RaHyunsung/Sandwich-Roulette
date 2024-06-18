@@ -9,6 +9,7 @@ ITEMS = [
     'Synergist',     # If the current sandwich is poisoned the damage will be doubled, if the sandwich is normal nothing happens
     'Sleep pills'    # Skips the enemy players next turn
     'Milk'           # Skip the current sandwich
+    'Reversor'       # Reverses the current sandwich, normal becomes poisoned and poisoned becomes normal.
 ]
 
 # ---------- GAME FUNCTIONS MODULE ----------
