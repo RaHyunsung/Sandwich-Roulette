@@ -258,8 +258,6 @@ def main():
     global message_box_size
     global message_box_functions
 
-    global color_tick
-
     while True:
         screen_width, screen_height = screen.get_size()
         screen.fill(BLACK)
