@@ -31,6 +31,8 @@ Credits = {
     "Background Music"  : "Cyberpunk Gaming Sport by Infraction [No Copyright Music] / 130 Dopa"
 }
 
+INTRODUCTION = "Test"
+
 # ---------- GAME OBJECTS ----------
 
 class MTI_Injector:
@@ -94,25 +96,27 @@ def render_message_box():
     box_height = message_box_size[1]
     box_x = (screen.get_width() - box_width) // 2
     box_y = (screen.get_height() - box_height) // 2
-    pygame.draw.rect(screen, DARK_GRAY, (box_x, box_y, box_width, box_height))
+    BG = message_box_color[1]
+    FG = message_box_color[0]
+    pygame.draw.rect(screen, BG, (box_x, box_y, box_width, box_height))
 
     lines = message_box_title.split("\n")
 
     current_y = 0
 
     for i in range(len(lines)):
-        text_surface, text_rect = render_text(lines[i], SMALL_FONT, WHITE, DARK_GRAY)
+        text_surface, text_rect = render_text(lines[i], SMALL_FONT, FG, BG, transparent=True)
         text_rect.center = (box_x + box_width // 2, box_y + 50 + i * 50)
         current_y += i * 50
         screen.blit(text_surface, text_rect)
 
     for i, item in enumerate(message_box_items):
         if i == message_box_selected:
-            text_color = DARK_GRAY
-            bg_color = WHITE
+            text_color = BG
+            bg_color = FG
         else:
-            text_color = WHITE
-            bg_color = DARK_GRAY
+            text_color = FG
+            bg_color = BG
         text_surface, text_rect = render_text(item, SMALL_FONT, text_color, bg_color)
         text_rect.center = (box_x + box_width // 2, box_y + 50 + (i + 1) * 50 + current_y)
         screen.blit(text_surface, text_rect)
@@ -150,7 +154,7 @@ def close_msgbox():
 def blank():
     pass
 
-class MainMenu:
+class Game:
     def __init__(self):
         self.message_box_active = False
         self.message_box_items = []
@@ -175,11 +179,41 @@ class MainMenu:
         message_box_size = self.message_box_size
         message_box_functions = self.message_box_functions
 
+
+class MainMenu:
+    def __init__(self):
+        self.message_box_active = False
+        self.message_box_items = []
+        self.message_box_selected = 0
+        self.message_box_title = ""
+        self.message_box_size = (400, 200)
+        self.message_box_functions = []
+        self.message_box_color = ()
+    
+    def _update(self):
+        global selected_item
+        global message_box_active
+        global message_box_selected
+        global message_box_title
+        global message_box_items
+        global message_box_size
+        global message_box_functions
+        global message_box_color
+
+        message_box_active = self.message_box_active
+        message_box_items = self.message_box_items
+        message_box_selected = self.message_box_selected
+        message_box_title = self.message_box_title
+        message_box_size = self.message_box_size
+        message_box_functions = self.message_box_functions
+        message_box_color = self.message_box_color
+
     def start_game(self):
         self.message_box_size = (1000, 250)
         self.message_box_title = "Please choose the game mode to play"
         self.message_box_items = ["PVP", "PVE", "Cancel"]
         self.message_box_functions = [blank, blank, close_msgbox]
+        self.message_box_color = (WHITE, DARK_GRAY)
         self.message_box_active = True
         self.message_box_selected = 0
         self._update()
@@ -189,6 +223,7 @@ class MainMenu:
         self.message_box_title = "Do you wish to exit the game?"
         self.message_box_functions = [quit_game, close_msgbox]
         self.message_box_items = ["Yes", "No"]
+        self.message_box_color = (WHITE, DARK_GRAY)
         self.message_box_active = True
         self.message_box_selected = 0
         self._update()
@@ -198,9 +233,21 @@ class MainMenu:
         self.message_box_title = '\n'.join([str(f"{key}: {value}") for key, value in Credits.items()])
         self.message_box_functions = [close_msgbox]
         self.message_box_items = ["Confirm"]
+        self.message_box_color = (WHITE, DARK_GRAY)
         self.message_box_active = True
         self.message_box_selected = 0
         self._update()
+
+    def introduction_page(self):
+        self.message_box_size = (screen.get_width(), screen.get_height())
+        self.message_box_title = INTRODUCTION
+        self.message_box_functions = [close_msgbox]
+        self.message_box_items = ["Confirm"]
+        self.message_box_color = (BLACK, WHITE)
+        self.message_box_active = True
+        self.message_box_selected = 0
+        self._update()
+        
 
 def main():
     global selected_item
@@ -236,16 +283,17 @@ def main():
         screen.blit(Blood2_Image, Blood2_rect)
 
         # Render texts
-        for i, item in enumerate(menu_items):
-            if i == selected_item:
-                color = BLACK
-                bg = WHITE
-            else:
-                color = WHITE
-                bg = BLACK
-            text_surface, text_rect = render_text(item["TEXT"].ljust(30), SMALL_FONT, color, bg)
-            text_rect.topleft = (20, 20 + i * 50)
-            screen.blit(text_surface, text_rect)
+        if menu_active == True:
+            for i, item in enumerate(menu_items):
+                if i == selected_item:
+                    color = BLACK
+                    bg = WHITE
+                else:
+                    color = WHITE
+                    bg = BLACK
+                text_surface, text_rect = render_text(item["TEXT"].ljust(30), SMALL_FONT, color, bg)
+                text_rect.topleft = (20, 20 + i * 50)
+                screen.blit(text_surface, text_rect)
 
         if message_box_active:
             render_message_box()
@@ -298,6 +346,7 @@ if __name__ == "__main__":
         {"TEXT" : "Start Game", "FUNC" : MAIN_MENU.start_game},
         {"TEXT" : "Settings", "FUNC" : blank},
         {"TEXT" : "Credits", "FUNC" : MAIN_MENU.show_credits},
+        {"TEXT" : "Introduction", "FUNC" : MAIN_MENU.introduction_page},
         {"TEXT" : "Exit", "FUNC" : MAIN_MENU.exit_game}
     ]
     selected_item = 0
@@ -308,6 +357,9 @@ if __name__ == "__main__":
     message_box_title = ""
     message_box_size = (400, 200)
     message_box_functions = []
+    message_box_color = ()
+
+    menu_active = True
 
     # PG-13 Image
     PG_Panel_size = (300, 150)

@@ -7,8 +7,8 @@ ITEMS = [
     'MTI',           # Heal 1 health bar
     'Detector',      # Detects poison in the current sandwich
     'Synergist',     # If the current sandwich is poisoned the damage will be doubled, if the sandwich is normal nothing happens
-    'Sleep pills'    # Skips the enemy players next turn
-    'Milk'           # Skip the current sandwich
+    'Sleep pills',   # Skips the enemy players next turn
+    'Milk',          # Skip the current sandwich
     'Reversor'       # Reverses the current sandwich, normal becomes poisoned and poisoned becomes normal.
 ]
 
@@ -32,7 +32,7 @@ class Core:
     
     def getItems(round, item_list:list):
         items = []
-        for i in range(round+1):
+        for i in range(round+2):
             choosen_item = random.choice(item_list)
             items.append(choosen_item)
         return items
@@ -40,4 +40,4 @@ class Core:
 
 for i in range(3):
     print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
-    print(f"Items: {Core.getItems(ITEMS)}")
+    print(f"Items: {Core.getItems(i, ITEMS)}")
