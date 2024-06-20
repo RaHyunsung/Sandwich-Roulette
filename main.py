@@ -311,10 +311,8 @@ def main():
                     elif event.key == pygame.K_RETURN:
                         menu_items[selected_item]["FUNC"]()
                     elif event.key == pygame.K_f:
-                        print(MAIN_CHAR.health)
                         injector = MTI_Injector()
                         injector.main(TARGET=MAIN_CHAR)
-                        print(MAIN_CHAR.health)
                 else:
                     if event.key == pygame.K_UP:
                         message_box_selected = (message_box_selected - 1) % len(message_box_items)
@@ -384,9 +382,6 @@ if __name__ == "__main__":
     MTI_Image = load_image(GAME_ASSETS["images"]["MTI"], MTI_size)
     MTI_rect = MTI_Image.get_rect()
     MTI_rect.center = (screen.get_width() / 2, screen.get_height() / 2)
-
-    clock = pygame.time.Clock()
-    FPS = 30
 
     pygame.mixer.music.load(GAME_ASSETS["sounds"]["BGM"])
     pygame.mixer.music.set_volume(0.5)
