@@ -42,33 +42,62 @@ class Core:
     
     def coinflip():
         return random.randint(0, 1)
+    
+    class Player:
+        def __init__(self, name):
+            self.name = name
+            self.health = 5
+
+    def eat_sandwich(self, sandwich):
+        if sandwich == 1: # Poisoned
+            print(f"{self.name} eats a poisoned sandwich! -1 health")
+            self.health -= 1
+        elif sandwich == 0: # Normal
+            print(f"{self.name} eats a normal sandwich and extends their turn")
+
+    def pass_sandwich(self, other_player):
+        print(f"{self.name} passes the sandwich to {other_player.name}")
+        return other_player
+    
+    def use_item(self, item):
+        print(f"{self.name} uses {item}")
+        # Add item effects
+
+    def playgame(player1_name, player2_name, rounds=3):
+        player1 = Player(player1_name)
+        player2 = Player(player2_name)
 
 # for i in range(3):
 #     print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
 #     print(f"Items: {Core.getItems(i, ITEMS)}")
 #     print("-" * 10)
 
-PLAYER1 = input("Player one name:")
+player1 = input("Player one name:")
 
-PLAYER2 = input("Player two name:")
+player2 = input("Player two name:")
 
 coin_result = Core.coinflip()
 if coin_result == 0:
-    print(PLAYER1, "will have the first turn")
+    print(player1, "will have the first turn")
+    current_player = player1
+    next_player = player2
     for i in range(3):
         print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
         player1_items = Core.getItems(i, ITEMS)
         player2_items = Core.getItems(i, ITEMS)
-        print(f"{PLAYER1}'s Items: {player1_items}")
-        print(f"{PLAYER2}'s Items: {player2_items}")
+        print(f"{player1}'s Items: {player1_items}")
+        print(f"{player2}'s Items: {player2_items}")
         print("-" * 10)
 else:
-    print(PLAYER2, "will have the first turn")
+    print(player2, "will have the first turn")
+    current_player = player2
+    next_player = player1
     for i in range(3):
         print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
         player1_items = Core.getItems(i, ITEMS)
         player2_items = Core.getItems(i, ITEMS)
-        print(f"{PLAYER1}'s Items: {player1_items}")
-        print(f"{PLAYER2}'s Items: {player2_items}")
+        print(f"{player1}'s Items: {player1_items}")
+        print(f"{player2}'s Items: {player2_items}")
         print("-" * 10)
 
+if player1
