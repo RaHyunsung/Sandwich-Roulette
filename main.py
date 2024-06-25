@@ -4,6 +4,7 @@ import sys
 import time
 import os
 import random
+import game as GameEngine
 
 # init Pygame core
 pygame.init()
@@ -64,7 +65,19 @@ class Player:
     def __init__(self):
         self.health = 3
         self.max_health = 3
+        self.dead = False
         self.items = []
+
+    def damage(self, amount:int):
+        if self.health - amount <= 0:
+            self.dead = True
+            return
+        self.health -= amount
+
+    def heal(self, amount:int):
+        if self.health + amount >= self.max_health:
+            return
+        self.health += amount
 
 # ---------- PARTICLES ----------
 
@@ -96,19 +109,25 @@ def render_message_box():
     box_height = message_box_size[1]
     box_x = (screen.get_width() - box_width) // 2
     box_y = (screen.get_height() - box_height) // 2
+    # Place the messagebox on the center of the screen
     BG = message_box_color[1]
     FG = message_box_color[0]
+    # Setup the background color and foregorund color
     pygame.draw.rect(screen, BG, (box_x, box_y, box_width, box_height))
+    # Create box at the center of the game
 
     lines = message_box_title.split("\n")
+    # Split all lines to place in different y axis
 
     current_y = 0
+    # Set y axis
 
     for i in range(len(lines)):
         text_surface, text_rect = render_text(lines[i], SMALL_FONT, FG, BG, transparent=True)
         text_rect.center = (box_x + box_width // 2, box_y + 50 + i * 50)
         current_y += i * 50
         screen.blit(text_surface, text_rect)
+    # Place each lines on the right y axis using render_text function
 
     for i, item in enumerate(message_box_items):
         if i == message_box_selected:
@@ -120,6 +139,7 @@ def render_message_box():
         text_surface, text_rect = render_text(item, SMALL_FONT, text_color, bg_color)
         text_rect.center = (box_x + box_width // 2, box_y + 50 + (i + 1) * 50 + current_y)
         screen.blit(text_surface, text_rect)
+    # Update the menu buttons by the global variable message_box_selected.
 
 def load_image(image_path, size):
     try:
@@ -162,6 +182,15 @@ class Game:
         self.message_box_title = ""
         self.message_box_size = (400, 200)
         self.message_box_functions = []
+        self.message_box_color = ()
+
+        self.round = 0                                          # Max 3 rounds
+        self.Sandwiches = GameEngine.Core.getSandwiches()       # Get sandwiches with random
+        self.Player1 = Player()                                 # Init the player 1
+        self.Player2 = Player()                                 # Init the player 2
+
+
+        
     
     def _update(self):
         global selected_item
@@ -171,6 +200,7 @@ class Game:
         global message_box_items
         global message_box_size
         global message_box_functions
+        global message_box_color
 
         message_box_active = self.message_box_active
         message_box_items = self.message_box_items
@@ -178,6 +208,8 @@ class Game:
         message_box_title = self.message_box_title
         message_box_size = self.message_box_size
         message_box_functions = self.message_box_functions
+        message_box_color = self.message_box_color
+
 
 
 class MainMenu:
