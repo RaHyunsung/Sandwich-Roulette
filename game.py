@@ -100,4 +100,4 @@ else:
         print(f"{player2}'s Items: {player2_items}")
         print("-" * 10)
 
-if player1
+
