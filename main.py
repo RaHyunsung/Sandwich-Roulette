@@ -340,9 +340,9 @@ def main():
                         selected_item = (selected_item + 1) % len(menu_items)
                     elif event.key == pygame.K_RETURN:
                         menu_items[selected_item]["FUNC"]()
-                    elif event.key == pygame.K_f:
-                        injector = MTI_Injector()
-                        injector.main(TARGET=MAIN_CHAR)
+                    # elif event.key == pygame.K_f:
+                    #     injector = MTI_Injector()
+                    #     injector.main(TARGET=MAIN_CHAR)
                 else:
                     if event.key == pygame.K_UP:
                         message_box_selected = (message_box_selected - 1) % len(message_box_items)
