@@ -36,6 +36,13 @@ class Core:
             choosen_item = random.choice(item_list)
             items.append(choosen_item)
         return items
+    
+    def getItems(round, item_list:list):
+        items = []                                      # Define a item list using equal symbol with straight brackets []
+        for i in range(round+2):                        # Repeat round+2 times which can be 1+2=3, 2+2=4, 3+2=5, ...
+            choosen_item = random.choice(item_list)     # Define a random item that is choosen from item_list and put it in to choosen_item variable using random.choice
+            items.append(choosen_item)                  # Add choosen_item variable in to the defined item list using .append
+        return items                                    # Give the list back
         
 
 for i in range(3):
