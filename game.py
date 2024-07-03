@@ -77,27 +77,21 @@ player1 = input("Player one name:")
 player2 = input("Player two name:")
 
 coin_result = Core.coinflip()
+total_round = 3
 if coin_result == 0:
     print(player1, "will have the first turn")
     current_player = player1
     next_player = player2
-    for i in range(3):
-        print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
-        player1_items = Core.getItems(i, ITEMS)
-        player2_items = Core.getItems(i, ITEMS)
-        print(f"{player1}'s Items: {player1_items}")
-        print(f"{player2}'s Items: {player2_items}")
-        print("-" * 10)
 else:
     print(player2, "will have the first turn")
     current_player = player2
     next_player = player1
-    for i in range(3):
-        print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
-        player1_items = Core.getItems(i, ITEMS)
-        player2_items = Core.getItems(i, ITEMS)
-        print(f"{player1}'s Items: {player1_items}")
-        print(f"{player2}'s Items: {player2_items}")
-        print("-" * 10)
 
+for i in range(total_round):
+    print(f"[+] Round {i+1}: {Core.getSandwiches(i)}")
+    player1_items = Core.getItems(i, ITEMS)
+    player2_items = Core.getItems(i, ITEMS)
+    print(f"{player1}'s Items: {player1_items}")
+    print(f"{player2}'s Items: {player2_items}")
+    print("-" * 10)
 
